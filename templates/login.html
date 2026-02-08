@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2>Login</h2>
+        
+        <form method="POST" novalidate>
+            {{ form.hidden_tag() }}
+            
+            <div class="mb-3">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-control") }}
+                {% if form.email.errors %}
+                    {% for error in form.email.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="mb-3">
+                {{ form.password.label(class="form-label") }}
+                {{ form.password(class="form-control") }}
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                        <div class="text-danger">{{ error }}</div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            
+            <div class="mb-3 form-check">
+                <!-- .form-check: Bootstrap container for checkbox/radio with different styling -->
+                {{ form.remember(class="form-check-input") }}
+                <!-- BooleanField renders: <input type="checkbox" name="remember" class="form-check-input"> -->
+                {{ form.remember.label(class="form-check-label") }}
+                <!-- .form-check-label: Bootstrap label for checkboxes (aligned properly) -->
+            </div>
+            
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+        
+        <p class="mt-3">
+            Don't have an account? <a href="{{ url_for('register') }}">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

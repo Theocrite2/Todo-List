@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}My Todos{% endblock %}
+
+{% block content %}
+<h2>My Todo List</h2>
+
+<!-- Add Todo Form -->
+<form method="POST" class="mb-4" novalidate>
+    {{ form.hidden_tag() }}
+
+    <div class="input-group">
+        <!-- .input-group: Bootstrap component combining inputs and buttons with shared borders -->
+        {{ form.content(class="form-control", placeholder="Enter a new todo") }}
+        <!-- placeholder: HTML attribute (grayed-out hint text, disappears on focus) -->
+        {{ form.submit(class="btn btn-primary") }}
+        <!-- Rendered inside input-group, appears attached to input field -->
+    </div>
+
+    {% if form.content.errors %}
+        {% for error in form.content.errors %}
+            <div class="text-danger mt-2">{{ error }}</div>
+            <!-- Example error: "Todo must be less than 200 characters" from Length validator -->
+        {% endfor %}
+    {% endif %}
+</form>
+
+<!-- Todo List -->
+{% if todos %}
+    <!-- todos: Python list of Todo objects passed from index() route -->
+    <ul class="list-group">
+        <!-- .list-group: Bootstrap component for styled lists (removes bullets, adds borders) -->
+        {% for todo in todos %}
+            <!-- Loop iterates over Todo SQLAlchemy model instances from database -->
+            <li class="list-group-item d-flex justify-content-between align-items-center {% if todo.completed %}text-decoration-line-through text-muted{% endif %}">
+                <!--
+                .d-flex: display: flex
+                .justify-content-between: space between children
+                .align-items-center: vertical center alignment
+                .text-decoration-line-through: strikethrough (conditional - only if todo.completed)
+                .text-muted: gray color (conditional - only if todo.completed)
+                -->
+
+                <span>{{ todo.content }}</span>
+                <!-- todo.content: String from database, auto-escaped (prevents XSS) -->
+
+                <div>
+                    <a href="{{ url_for('toggle', todo_id=todo.id) }}" class="btn btn-sm btn-success me-2">
+                        <!-- url_for('toggle', todo_id=todo.id): Generates /toggle/5 URL with todo's ID -->
+                        <!-- .btn-sm: smaller button, .btn-success: green button, .me-2: margin-end spacing -->
+                        {% if todo.completed %}Undo{% else %}Complete{% endif %}
+                        <!-- Button text changes based on todo.completed state -->
+                    </a>
+
+                    <a href="{{ url_for('delete', todo_id=todo.id) }}" class="btn btn-sm btn-danger">
+                        <!-- .btn-danger: Bootstrap red button, generates /delete/5 URL -->
+                        Delete
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-muted">No todos yet. Add one above!</p>
+    <!-- Shown when todos list is empty, .text-muted: gray de-emphasized text -->
+{% endif %}
+{% endblock %}

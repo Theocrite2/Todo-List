@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!--
+    Meta viewport: Responsive design tag
+    width=device-width: Use device screen width
+    initial-scale=1.0: No zoom on page load
+    -->
+
+    <title>{% block title %}Todo List{% endblock %}</title>
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!--
+    CDN (Content Delivery Network): Serves files from geographically distributed servers
+    WHY: Faster loading, browser may have cached already, no hosting cost
+    Production consideration: CDN dependency (offline breaks, version changes)
+    -->
+</head>
+<body>
+    <!-- Navbar: Bootstrap component -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!--
+        .navbar: Bootstrap base navbar class (flexbox layout)
+        .navbar-expand-lg: Responsive breakpoint - collapses below large screens
+        .navbar-dark: Light text on dark background
+        .bg-dark: Bootstrap utility class (dark gray background)
+        -->
+        <div class="container">
+            <!--
+            .container: Bootstrap class (max-width responsive container with padding)
+            Centers content, max 1140px on large screens
+            -->
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <!--
+                .navbar-brand: Bootstrap class for branding/logo
+                url_for('index'): Jinja2 function call generating URL
+                -->
+                Todo App
+            </a>
+
+            <!-- Navbar items -->
+            <div class="navbar-nav ms-auto">
+                <!--
+                .navbar-nav: Bootstrap class for nav items
+                .ms-auto: Bootstrap utility (margin-start: auto) - pushes right
+                -->
+                {% if current_user.is_authenticated %}
+                    <!-- current_user: Flask-Login object, .is_authenticated: UserMixin property -->
+                    <span class="navbar-text me-3">
+                        <!--
+                        .navbar-text: Bootstrap class for text in navbar
+                        .me-3: Bootstrap utility (margin-end: 1rem spacing)
+                        -->
+                        {{ current_user.email }}
+                    </span>
+                    <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+                {% else %}
+                    <a class="nav-link" href="{{ url_for('login') }}">Login</a>
+                    <a class="nav-link" href="{{ url_for('register') }}">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- Flash messages -->
+    <div class="container mt-4">
+        <!-- .mt-4: Bootstrap utility (margin-top: 1.5rem) -->
+        {% with messages = get_flashed_messages(with_categories=True) %}
+            <!--
+            get_flashed_messages(): Flask function returning list from flash()
+            with_categories=True: Returns tuples (category, message)
+            -->
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        <!--
+                        .alert: Bootstrap alert component base class
+                        alert-{{ category }}: Dynamic class (alert-success, alert-danger, alert-info)
+                        .alert-dismissible: Adds close button
+                        .fade .show: Bootstrap animations
+                        role="alert": Accessibility for screen readers
+                        -->
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        <!-- data-bs-dismiss: Bootstrap JS attribute, clicking removes alert -->
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Content block - child templates replace this -->
+    <div class="container mt-4">
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- Bootstrap JS Bundle (includes Popper for dropdowns/tooltips) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Required for: dismissible alerts, navbar collapse, dropdowns, modals -->
+</body>
+</html>
